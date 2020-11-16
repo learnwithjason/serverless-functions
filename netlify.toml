@@ -1,0 +1,7 @@
+[build]
+  build = "# no build command"
+  functions = "functions"
+  publish = "public"
+
+[dev]
+  autoLaunch = false

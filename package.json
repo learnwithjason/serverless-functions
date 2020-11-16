@@ -1,0 +1,17 @@
+{
+  "name": "serverless-functions",
+  "version": "0.0.1",
+  "main": "index.js",
+  "author": "Jason Lengstorf <jason@lengstorf.com> (https://jason.af)",
+  "license": "MIT",
+  "scripts": {
+    "dev": "serve public"
+  },
+  "dependencies": {
+    "node-fetch": "^2.6.1"
+  },
+  "devDependencies": {
+    "http-server": "^0.12.3",
+    "serve": "^11.3.2"
+  }
+}
