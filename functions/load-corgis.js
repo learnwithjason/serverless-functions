@@ -6,7 +6,16 @@ exports.handler = async () => {
     'https://no-cors-api.netlify.app/api/corgis/',
   ).then((res) => res.json());
 
-  const data = await hasuraRequest({
+  const unsplashPromise = fetch(
+    `https://api.unsplash.com/collections/48405776/photos`,
+    {
+      headers: {
+        Authorization: `Client-ID ${process.env.UNSPLASH_ACCESS_KEY}`,
+      },
+    },
+  ).then((res) => res.json());
+
+  const hasuraPromise = hasuraRequest({
     query: `
       mutation InsertOrUpdateBoops($corgis: [boops_insert_input!]!) {
         boops: insert_boops(objects: $corgis, on_conflict: {constraint: boops_pkey, update_columns: id}) {
@@ -22,11 +31,20 @@ exports.handler = async () => {
     },
   });
 
-  const corgisWithBoops = corgis.map((corgi) => {
-    const boops = data.boops.returning.find((b) => b.id === corgi.id);
+  const [unsplashData, hasuraData] = await Promise.all([
+    unsplashPromise,
+    hasuraPromise,
+  ]);
+
+  const completeData = corgis.map((corgi) => {
+    const photo = unsplashData.find((p) => corgi.id === p.id);
+    const boops = hasuraData.boops.returning.find((b) => b.id === corgi.id);
 
     return {
       ...corgi,
+      alt: photo.alt_description,
+      credit: photo.user.name,
+      url: `${photo.urls.raw}&auto=format&fit=crop&w=300&h=300&q=80&crop=entropy`,
       boops: boops.count,
     };
   });
@@ -36,6 +54,6 @@ exports.handler = async () => {
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify(corgisWithBoops),
+    body: JSON.stringify(completeData),
   };
 };
