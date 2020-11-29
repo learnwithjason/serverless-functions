@@ -7,7 +7,9 @@
   "scripts": {
     "dev": "serve public"
   },
-  "dependencies": {},
+  "dependencies": {
+    "node-fetch": "^2.6.1"
+  },
   "devDependencies": {
     "http-server": "^0.12.3",
     "serve": "^11.3.2"
